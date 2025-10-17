@@ -15,7 +15,7 @@ public class MenuController {
     double difficulty = 2; // default medium
     boolean game_assist = true;
 
-    Scene menuScene;
+    static Scene menuScene;
 
     public MenuController() {
         // Initialize menu state
@@ -38,7 +38,7 @@ public class MenuController {
         startButton.setOnAction(e -> {
             System.out.println("Start Game button clicked");
             GameController gameController = new GameController();
-            gameController.startNewGame(difficulty);
+            gameController.startNewGame(difficulty, game_assist);
         });
         vBox.getChildren().add(startButton);
 
