@@ -44,49 +44,62 @@ public class GameController {
         // start a new game
         getPuzzle();
 
-        // create a new game scene
+        // grid
         GridPane grid_pane = new GridPane();
-        gameScene = new Scene(grid_pane, 600, 600);
         grid_pane.setGridLinesVisible(true);
-        
         grid_pane.setAlignment(Pos.CENTER);
         grid_pane.setHgap(5);
 
         // populate the grid with the puzzle data and visually separate 3x3 boxes
         for (int i = 0; i < grid_size; i++) {
             for (int j = 0; j < grid_size; j++) {
-            TextField cell = new TextField();
-            cell.setPrefWidth(60);
-            cell.setPrefHeight(60);
-            cell.setStyle("-fx-font-size: 20px; -fx-alignment: center;");
+                TextField cell = new TextField();
+                cell.setPrefWidth(60);
+                cell.setPrefHeight(60);
+                cell.setStyle("-fx-font-size: 20px; -fx-alignment: center;");
 
-            // add thicker borders for 3x3 grid separation
-            StringBuilder borderStyle = new StringBuilder();
-            borderStyle.append("-fx-border-color: black;");
-            borderStyle.append("-fx-border-width: ");
-            borderStyle.append((i % 3 == 0 ? "2" : "1")).append(" "); // top
-            borderStyle.append((j % 3 == 2 ? "2" : "1")).append(" "); // right
-            borderStyle.append((i % 3 == 2 ? "2" : "1")).append(" "); // bottom
-            borderStyle.append((j % 3 == 0 ? "2" : "1")).append(";"); // left
+                // add thicker borders for 3x3 grid separation
+                StringBuilder borderStyle = new StringBuilder();
+                borderStyle.append("-fx-border-color: black;");
+                borderStyle.append("-fx-border-width: ");
+                borderStyle.append((i % 3 == 0 ? "2" : "1")).append(" "); // top
+                borderStyle.append((j % 3 == 2 ? "2" : "1")).append(" "); // right
+                borderStyle.append((i % 3 == 2 ? "2" : "1")).append(" "); // bottom
+                borderStyle.append((j % 3 == 0 ? "2" : "1")).append(";"); // left
 
-            cell.setStyle(cell.getStyle() + borderStyle.toString());
+                cell.setStyle(cell.getStyle() + borderStyle.toString());
 
-            if (grid_data[i][j] != 0) {
-                cell.setText(String.valueOf((int) grid_data[i][j]));
-                cell.setEditable(false);
-                cell.setStyle(cell.getStyle() + "-fx-background-color: lightgray;");
-            }
+                if (grid_data[i][j] != 0) {
+                    cell.setText(String.valueOf((int) grid_data[i][j]));
+                    cell.setEditable(false);
+                    cell.setStyle(cell.getStyle() + "-fx-background-color: lightgray;");
+                }
 
-            // Add listener to handle user input
-            final int row = i;
-            final int col = j;
-            cell.textProperty().addListener((obs, old_value, new_value) -> {
-                onUpdate(cell, row, col, new_value);
-            });
+                // Add listener to handle user input
+                final int row = i;
+                final int col = j;
+                cell.textProperty().addListener((obs, old_value, new_value) -> {
+                    onUpdate(cell, row, col, new_value);
+                });
 
-            grid_pane.add(cell, j, i);
+                grid_pane.add(cell, j, i);
             }
         }
+
+        // controls below the grid
+        VBox controlsBox = new VBox(10);
+        controlsBox.setAlignment(Pos.CENTER);
+
+        Button menuButton = new Button("Return to Main Menu");
+        menuButton.setOnAction(e -> App.setScene(MenuController.menuScene));
+
+        controlsBox.getChildren().add(menuButton);
+
+        // root VBox contains grid + controls and is the scene root
+        VBox root = new VBox(10, grid_pane, controlsBox);
+        root.setAlignment(Pos.CENTER);
+
+        gameScene = new Scene(root, 700, 700);
 
         // set the scene
         App.setScene(gameScene);
@@ -210,17 +223,7 @@ public class GameController {
             Text winText = new Text("Congratulations! You solved the puzzle!");
             winText.setFill(Color.GREEN);
             winText.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-
-            // spawn it under the grid
-            gameScene.setRoot(new VBox(((GridPane) gameScene.getRoot()), winText));
-
-            // menu button to return to main menu
-            Button menuButton = new Button("Return to Main Menu");
-            menuButton.setOnAction(e -> {
-                App.setScene(MenuController.menuScene);
-            });
-
-            ((VBox) gameScene.getRoot()).getChildren().add(menuButton);
+            ((VBox) gameScene.getRoot()).getChildren().add(winText);
         }
     }
 
